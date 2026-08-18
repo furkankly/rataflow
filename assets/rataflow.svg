@@ -1,0 +1,97 @@
+<svg viewBox="0 0 560 234" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<pattern id="dots" width="18.06" height="18" patternUnits="userSpaceOnUse">
+  <circle cx="9" cy="9" r="1.05" fill="#545d6e"/>
+</pattern>
+</defs>
+<rect width="560" height="234" rx="6" fill="#0a0c10"/>
+<rect x="6" y="18" width="548" height="205" fill="url(#dots)" opacity="0.4"/>
+<rect x="24.1" y="19.0" width="168.6" height="89.0" rx="5" fill="#161922"/>
+<rect x="367.3" y="127.0" width="168.6" height="89.0" rx="5" fill="#161922"/>
+<text x="0.00" y="14" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#545d6e" xml:space="preserve">╭────────────────────────</text>
+<text x="225.80" y="14" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#5fafff" font-weight="bold" xml:space="preserve">┤</text>
+<text x="243.86" y="14" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#5fafff" font-weight="bold" xml:space="preserve">rataflow</text>
+<text x="325.15" y="14" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#5fafff" font-weight="bold" xml:space="preserve">├</text>
+<text x="334.18" y="14" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#545d6e" xml:space="preserve">────────────────────────╮</text>
+<text x="0.00" y="32" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#545d6e" xml:space="preserve">│</text>
+<text x="27.10" y="32" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#af87ff" xml:space="preserve">╭</text>
+<text x="45.16" y="32" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#af87ff" xml:space="preserve">node_a</text>
+<text x="108.38" y="32" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#af87ff" xml:space="preserve">────────╮</text>
+<text x="550.95" y="32" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#545d6e" xml:space="preserve">│</text>
+<text x="0.00" y="50" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#545d6e" xml:space="preserve">│</text>
+<text x="27.10" y="50" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#af87ff" xml:space="preserve">│</text>
+<text x="45.16" y="50" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#af87ff" xml:space="preserve">❯</text>
+<text x="63.22" y="50" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#c9d1d9" xml:space="preserve">tail</text>
+<text x="108.38" y="50" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#c9d1d9" xml:space="preserve">-f</text>
+<text x="180.64" y="50" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#af87ff" xml:space="preserve">│</text>
+<text x="550.95" y="50" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#545d6e" xml:space="preserve">│</text>
+<text x="0.00" y="68" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#545d6e" xml:space="preserve">│</text>
+<text x="27.10" y="68" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#af87ff" xml:space="preserve">│</text>
+<text x="63.22" y="68" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#c9d1d9" xml:space="preserve">app.lo</text>
+<text x="117.42" y="68" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#af87ff" xml:space="preserve">g█</text>
+<text x="180.64" y="68" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#af87ff" xml:space="preserve">●</text>
+<text x="550.95" y="68" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#545d6e" xml:space="preserve">│</text>
+<text x="0.00" y="86" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#545d6e" xml:space="preserve">│</text>
+<text x="27.10" y="86" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#af87ff" xml:space="preserve">│</text>
+<text x="180.64" y="86" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#af87ff" xml:space="preserve">│</text>
+<text x="550.95" y="86" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#545d6e" xml:space="preserve">│</text>
+<text x="0.00" y="104" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#545d6e" xml:space="preserve">│</text>
+<text x="27.10" y="104" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#af87ff" xml:space="preserve">╰────────────────╯</text>
+<text x="550.95" y="104" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#545d6e" xml:space="preserve">│</text>
+<text x="0.00" y="122" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#545d6e" xml:space="preserve">│</text>
+<text x="550.95" y="122" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#545d6e" xml:space="preserve">│</text>
+<text x="0.00" y="140" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#545d6e" xml:space="preserve">│</text>
+<text x="370.31" y="140" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#87d787" xml:space="preserve">╔═</text>
+<text x="397.41" y="140" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#87d787" xml:space="preserve">node_b</text>
+<text x="460.63" y="140" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#87d787" xml:space="preserve">═══════╗</text>
+<text x="550.95" y="140" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#545d6e" xml:space="preserve">│</text>
+<text x="0.00" y="158" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#545d6e" xml:space="preserve">│</text>
+<text x="370.31" y="158" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#87d787" xml:space="preserve">║</text>
+<text x="388.38" y="158" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#545d6e" xml:space="preserve">req/s</text>
+<text x="523.86" y="158" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#87d787" xml:space="preserve">║</text>
+<text x="550.95" y="158" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#545d6e" xml:space="preserve">│</text>
+<text x="0.00" y="176" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#545d6e" xml:space="preserve">│</text>
+<text x="370.31" y="176" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#87d787" xml:space="preserve">●</text>
+<text x="523.86" y="176" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#87d787" xml:space="preserve">║</text>
+<text x="550.95" y="176" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#545d6e" xml:space="preserve">│</text>
+<text x="0.00" y="194" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#545d6e" xml:space="preserve">│</text>
+<text x="370.31" y="194" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#87d787" xml:space="preserve">║</text>
+<text x="406.44" y="194" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#c9d1d9" xml:space="preserve">streaming</text>
+<text x="523.86" y="194" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#87d787" xml:space="preserve">║</text>
+<text x="550.95" y="194" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#545d6e" xml:space="preserve">│</text>
+<text x="0.00" y="212" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#545d6e" xml:space="preserve">│</text>
+<text x="370.31" y="212" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#87d787" xml:space="preserve">╚════════════════╝</text>
+<text x="550.95" y="212" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#545d6e" xml:space="preserve">│</text>
+<text x="0.00" y="230" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#545d6e" xml:space="preserve">╰────────────────────────────────────────────────────────────╯</text>
+
+<circle cx="393" cy="189" r="3.2" fill="#87d787">
+  <animate attributeName="opacity" values="1;0.25;1" dur="1.3s" repeatCount="indefinite"/>
+  <animate attributeName="r" values="3.2;4.4;3.2" dur="1.3s" repeatCount="indefinite"/>
+</circle>
+<clipPath id="spk"><rect x="386" y="162" width="122" height="21"/></clipPath><g clip-path="url(#spk)"><g><animateTransform attributeName="transform" type="translate" values="0 0;-160 0" dur="7s" repeatCount="indefinite"/><rect x="388" y="176" width="6" height="5" rx="1" fill="#5fd7d7"/><rect x="396" y="174" width="6" height="7" rx="1" fill="#5fd7d7"/><rect x="404" y="172" width="6" height="9" rx="1" fill="#5fd7d7"/><rect x="412" y="169" width="6" height="12" rx="1" fill="#5fd7d7"/><rect x="420" y="167" width="6" height="14" rx="1" fill="#5fd7d7"/><rect x="428" y="166" width="6" height="15" rx="1" fill="#5fd7d7"/><rect x="436" y="168" width="6" height="13" rx="1" fill="#5fd7d7"/><rect x="444" y="171" width="6" height="10" rx="1" fill="#5fd7d7"/><rect x="452" y="173" width="6" height="8" rx="1" fill="#5fd7d7"/><rect x="460" y="175" width="6" height="6" rx="1" fill="#5fd7d7"/><rect x="468" y="176" width="6" height="5" rx="1" fill="#5fd7d7"/><rect x="476" y="174" width="6" height="7" rx="1" fill="#5fd7d7"/><rect x="484" y="171" width="6" height="10" rx="1" fill="#5fd7d7"/><rect x="492" y="168" width="6" height="13" rx="1" fill="#5fd7d7"/><rect x="500" y="166" width="6" height="15" rx="1" fill="#5fd7d7"/><rect x="508" y="167" width="6" height="14" rx="1" fill="#5fd7d7"/><rect x="516" y="170" width="6" height="11" rx="1" fill="#5fd7d7"/><rect x="524" y="172" width="6" height="9" rx="1" fill="#5fd7d7"/><rect x="532" y="174" width="6" height="7" rx="1" fill="#5fd7d7"/><rect x="540" y="176" width="6" height="5" rx="1" fill="#5fd7d7"/><rect x="548" y="176" width="6" height="5" rx="1" fill="#5fd7d7"/><rect x="556" y="174" width="6" height="7" rx="1" fill="#5fd7d7"/><rect x="564" y="172" width="6" height="9" rx="1" fill="#5fd7d7"/><rect x="572" y="169" width="6" height="12" rx="1" fill="#5fd7d7"/><rect x="580" y="167" width="6" height="14" rx="1" fill="#5fd7d7"/><rect x="588" y="166" width="6" height="15" rx="1" fill="#5fd7d7"/><rect x="596" y="168" width="6" height="13" rx="1" fill="#5fd7d7"/><rect x="604" y="171" width="6" height="10" rx="1" fill="#5fd7d7"/><rect x="612" y="173" width="6" height="8" rx="1" fill="#5fd7d7"/><rect x="620" y="175" width="6" height="6" rx="1" fill="#5fd7d7"/><rect x="628" y="176" width="6" height="5" rx="1" fill="#5fd7d7"/><rect x="636" y="174" width="6" height="7" rx="1" fill="#5fd7d7"/><rect x="644" y="171" width="6" height="10" rx="1" fill="#5fd7d7"/><rect x="652" y="168" width="6" height="13" rx="1" fill="#5fd7d7"/><rect x="660" y="166" width="6" height="15" rx="1" fill="#5fd7d7"/><rect x="668" y="167" width="6" height="14" rx="1" fill="#5fd7d7"/><rect x="676" y="170" width="6" height="11" rx="1" fill="#5fd7d7"/><rect x="684" y="172" width="6" height="9" rx="1" fill="#5fd7d7"/><rect x="692" y="174" width="6" height="7" rx="1" fill="#5fd7d7"/><rect x="700" y="176" width="6" height="5" rx="1" fill="#5fd7d7"/></g></g>
+<text x="478.7" y="158" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#ffd75f" opacity="1">1.2k<animate attributeName="opacity" values="1;0;0" keyTimes="0;0.3333;0.6667" calcMode="discrete" dur="2.4s" repeatCount="indefinite"/></text><text x="478.7" y="158" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#ffd75f" opacity="0">1.3k<animate attributeName="opacity" values="0;1;0" keyTimes="0;0.3333;0.6667" calcMode="discrete" dur="2.4s" repeatCount="indefinite"/></text><text x="478.7" y="158" font-family="DejaVu Sans Mono, monospace" font-size="15" fill="#ffd75f" opacity="0">1.1k<animate attributeName="opacity" values="0;0;1" keyTimes="0;0.3333;0.6667" calcMode="discrete" dur="2.4s" repeatCount="indefinite"/></text>
+
+
+<path d="M 185.2 63 L 269.5 63 Q 275.5 63 275.5 69 L 275.5 165 Q 275.5 171 281.5 171 L 374.8 171" fill="none" stroke="#5fafff" stroke-width="2" stroke-linecap="round" stroke-dasharray="5 7" opacity="0.9">
+  <animate attributeName="stroke-dashoffset" values="0;-24" dur="0.9s" repeatCount="indefinite"/>
+</path>
+
+<g><animateMotion path="M 185.2 63 L 269.5 63 Q 275.5 63 275.5 69 L 275.5 165 Q 275.5 171 281.5 171 L 374.8 171" dur="3.4s" repeatCount="indefinite" rotate="auto"/>
+  <animate attributeName="opacity" values="0;1;1;1;0" keyTimes="0;0.1;0.5;0.92;1" dur="3.4s" repeatCount="indefinite"/>
+  <g><animateTransform attributeName="transform" type="translate" values="0 0;0 -2.5;0 0;0 -2.5;0 0" dur="0.34s" repeatCount="indefinite"/>
+    <g transform="scale(0.40)" stroke-linecap="round" stroke-linejoin="round">
+      <g><animateTransform attributeName="transform" type="rotate" values="0 -26 4;8 -26 4;0 -26 4;-4 -26 4;0 -26 4" dur="0.62s" repeatCount="indefinite"/>
+        <path d="M -26 4 C -44 6 -52 -6 -44 -18 C -40 -24 -32 -24 -30 -18" fill="none" stroke="#c98a96" stroke-width="3.4"/></g>
+      <g><animateTransform attributeName="transform" type="translate" values="0 0;0 -3;0 0" dur="0.34s" begin="-0.17s" repeatCount="indefinite"/>
+        <ellipse cx="-8" cy="16" rx="5" ry="3.5" fill="#6f7783"/></g>
+      <ellipse cx="0" cy="0" rx="27" ry="16" fill="#8b8f9a"/><ellipse cx="2" cy="6" rx="20" ry="9" fill="#a7abb5"/>
+      <g><animateTransform attributeName="transform" type="translate" values="0 0;0 -3;0 0" dur="0.34s" repeatCount="indefinite"/>
+        <ellipse cx="16" cy="15" rx="5" ry="3.5" fill="#6f7783"/></g>
+      <ellipse cx="22" cy="-1" rx="15" ry="13" fill="#9499a3"/>
+      <path d="M 30 -6 C 42 -4 44 4 34 8 C 30 9 26 7 26 2 Z" fill="#9499a3"/>
+      <circle cx="17" cy="-15" r="9" fill="#8b8f9a"/><circle cx="17" cy="-14" r="5" fill="#c98a96"/>
+      <circle cx="26" cy="-5" r="2.6" fill="#1a1d23"/><circle cx="27" cy="-6" r="0.9" fill="#fff"/>
+      <circle cx="39" cy="3" r="2.4" fill="#c98a96"/>
+      <g stroke="#cfd3da" stroke-width="1" opacity="0.85"><path d="M 36 4 L 50 1"/><path d="M 36 5 L 50 6"/><path d="M 36 6 L 49 11"/></g>
+    </g></g></g>
+</svg>

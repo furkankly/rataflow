@@ -1,0 +1,13 @@
+[package]
+name = "rataflow-examples"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[features]
+serde = ["rataflow/serde", "dep:serde_json"]
+
+[dependencies]
+rataflow = { path = "../..", default-features = false, features = ["sugiyama"] }
+ratatui = { version = "0.30", default-features = false }
+serde_json = { version = "1", optional = true }

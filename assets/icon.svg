@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="rataflow">
+<!-- The mascot at favicon size, and the source of web/public/favicon.svg —
+     assets/build.sh copies it there, so edit this one.
+
+     Recomposed rather than scaled. The full mark is
+     wide once the upstream node and the whiskers are counted, and squeezing
+     that into a square leaves the rat a sliver; here the body takes the top of
+     the square and the tail curls back underneath it. The paw domes go — below
+     about 24px they are a pixel each and read as damage. What is left is the
+     silhouette, the ear, the eye and the nose handle. -->
+<rect width="32" height="32" rx="6" fill="#0a0c10"/>
+
+<path d="M6 15 C 3.5 16.5 3 20 4.5 22.5 C 5.4 24 4 25.5 2.5 25"
+      fill="none" stroke="#545d6e" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+
+<path d="M10 9.5 C 13 8 16 8 18 9 A 2.8 2.8 0 0 1 23.6 9 Q 25.6 10.5 26.8 13.5 Q 27.8 15 26.8 16 L23 19.5 H10 Q 6 19.5 6 16 V13 Q 6 9.5 10 9.5 Z"
+      fill="#161922" stroke="#5fafff" stroke-width="2" stroke-linejoin="round"/>
+
+<circle cx="6" cy="15" r="1.7" fill="#5fafff"/>
+<circle cx="21.5" cy="13.2" r="1.05" fill="#af87ff"/>
+<circle cx="27.1" cy="15.6" r="1.6" fill="#af87ff"/>
+</svg>

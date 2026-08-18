@@ -1,0 +1,210 @@
+[workspace]
+members = [".", "examples/shared"]
+exclude = ["web/wasm"]
+
+[package]
+name = "rataflow"
+version = "0.1.0"
+edition = "2024"
+# Inherited from ratatui 0.30, which is the floor: nothing in this crate's own
+# source needs anything newer. Verified by the `msrv` job in CI.
+rust-version = "1.88"
+authors = ["Furkan Kalaycioglu <furkankalaycioglu12@gmail.com>"]
+description = "Node-based UIs for the terminal, built on ratatui — nodes, edges, panning, zooming, and mouse interaction, from static diagrams to interactive editors"
+license = "MIT"
+repository = "https://github.com/furkankly/rataflow"
+# An allow-list, not a deny-list: state what the crate ships and everything else
+# stays out by default. The inverse leaks — `web/` alone carries a node_modules
+# tree that dwarfs the crate, and cargo falls back to a plain filesystem walk
+# (which ignores .gitignore) whenever it cannot use git file listing, so nothing
+# outside this list can be assumed absent. README.md is not optional: lib.rs
+# pulls it in with `#![doc = include_str!("../README.md")]`.
+# Cargo adds Cargo.toml and Cargo.lock on its own.
+include = ["/src/**/*.rs", "/README.md", "/LICENSE"]
+homepage = "https://rataflow.furkankly.dev"
+readme = "README.md"
+keywords = ["ratatui", "tui", "flow", "graph", "widget"]
+categories = ["command-line-interface", "visualization"]
+
+[package.metadata.docs.rs]
+# Document all features on docs.rs
+all-features = true
+# Host target only. docs.rs applies one feature set to every target it builds,
+# and `all-features` turns on the native backends — none of crossterm, termion
+# or termwiz compiles for wasm32. Adding wasm32 back would mean documenting the
+# ratzilla impls at the cost of dropping all three native backends, which trades
+# the common case for the niche one. The `wasm` job in CI is what keeps the
+# wasm32 build honest.
+targets = ["x86_64-unknown-linux-gnu"]
+
+[features]
+default = ["sugiyama", "crossterm"]
+sugiyama = ["dep:rust-sugiyama"]
+serde = ["dep:serde", "ratatui/serde"]
+
+# Backend event support - enables From impls for event conversion
+# Users can enable multiple backends or none (and use mutation methods directly)
+crossterm = ["ratatui/crossterm"]
+termion = ["ratatui/termion"]
+termwiz = ["ratatui/termwiz"]
+ratzilla = ["dep:ratzilla"]       # WebAssembly support via ratzilla
+
+[dependencies]
+ratatui = { version = "0.30", default-features = false }
+thiserror = "2"
+serde = { version = "1", features = ["derive"], optional = true }
+rust-sugiyama = { version = "0.4", optional = true }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+ratzilla = { version = "0.3", optional = true }
+
+[dev-dependencies]
+serde_json = "1"
+ratatui-image = { version = "11.0.4", default-features = false, features = [
+  "image-defaults",
+  "crossterm",
+] }
+image = "0.25"
+crossterm = { version = "0.29", features = ["event-stream"] }
+tokio = { version = "1", features = [
+  "rt",
+  "rt-multi-thread",
+  "macros",
+  "time",
+  "sync",
+] }
+futures = "0.3"
+tachyonfx = { version = "0.25", features = ["std-duration"] }
+rataflow-examples = { path = "examples/shared", features = ["serde"] }
+
+# termion is Unix-only (its `sys` module is `#[cfg(unix)]`), and a plain
+# dev-dependency is compiled for every target regardless of which features are
+# enabled — so declaring it unconditionally breaks `cargo test` on Windows even
+# with the `termion` feature off. It exists for examples/termion_basic.rs.
+[target.'cfg(unix)'.dev-dependencies]
+termion = "4"
+
+[[example]]
+name = "basic"
+path = "examples/basic.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "hierarchy"
+path = "examples/hierarchy.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "custom_nodes"
+path = "examples/custom_nodes.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "custom_edges"
+path = "examples/custom_edges.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "floating_edges"
+path = "examples/floating_edges.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "custom_layout"
+path = "examples/custom_layout.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "companion_widgets"
+path = "examples/companion_widgets.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "overview"
+path = "examples/overview.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "view_only"
+path = "examples/view_only.rs"
+required-features = ["sugiyama", "crossterm"]
+
+[[example]]
+name = "termion_basic"
+path = "examples/termion_basic.rs"
+required-features = ["termion"]
+
+[[example]]
+name = "basic_async"
+path = "examples/basic_async.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "custom_bindings"
+path = "examples/custom_bindings.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "animating_edges"
+path = "examples/animating_edges.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "context_menu"
+path = "examples/context_menu.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "events"
+path = "examples/events.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "mutations"
+path = "examples/mutations.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "undo_redo"
+path = "examples/undo_redo.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "multi_select"
+path = "examples/multi_select.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "theming"
+path = "examples/theming.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "edge_routing"
+path = "examples/edge_routing.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "save_restore"
+path = "examples/save_restore.rs"
+required-features = ["crossterm", "serde"]
+
+[[example]]
+name = "reconnection"
+path = "examples/reconnection.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "node_flags"
+path = "examples/node_flags.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "validation"
+path = "examples/validation.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "stress_test"
+path = "examples/stress_test.rs"
+required-features = ["crossterm"]

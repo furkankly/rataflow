@@ -1,0 +1,64 @@
+<svg viewBox="0 0 220 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="rataflow mascot: a rat that is a node in a flow graph">
+<!--
+  A rat that is a node, wired into a graph. Everything attached to it is
+  something the library already has a name for: the dots on its outline are
+  handles, the whiskers leaving its nose are step edges (right angles with
+  rounded corners, which is what StepEdge rasterizes to), the tail is a braille
+  stroke — the smooth-diagonal mode — and the box at the top left is the node
+  upstream of it.
+
+  The silhouette is a single closed path, not a box with parts stuck on. Two
+  earlier attempts had the head as a rectangle with a disc on top for an ear;
+  both read as a bear, because a rectangle plus circles is what a bear is. The
+  ear here is a dome *in the outline* — the node's own border swells into it —
+  and the front of the body draws out into the snout, so there is no seam at
+  the neck and nothing sits on top of anything.
+
+  Drawn as geometry rather than as monospace text, unlike assets/rataflow.svg.
+  The wordmark can assume a font because it is only ever seen large; a mark that
+  has to hold at 16px cannot afford to be re-laid-out by whatever monospace the
+  viewer happens to have.
+
+  Palette is the site's: ink #0a0c10, node fill #161922, accent #5fafff, edges
+  #545d6e so they read as edges and not as body, and #af87ff — the node_a purple
+  from the wordmark — on the eye and the nose.
+-->
+<defs>
+  <pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse">
+    <circle cx="10" cy="10" r="1.2" fill="#545d6e"/>
+  </pattern>
+</defs>
+
+<rect width="220" height="150" rx="10" fill="#0a0c10"/>
+<rect width="220" height="150" rx="10" fill="url(#dots)" opacity="0.4"/>
+
+<!-- The node upstream. Dim, so it stays scenery: it is here to say that the rat
+     is in a graph, and to give the edge somewhere to have come from. -->
+<rect x="14" y="14" width="46" height="20" rx="4" fill="#161922" stroke="#545d6e" stroke-width="2"/>
+<rect x="22" y="22.8" width="30" height="2.6" rx="1.3" fill="#545d6e"/>
+
+<!-- Edges first, so the handles they land on are drawn over their ends and no
+     join shows — the same order the canvas composites in. -->
+<g fill="none" stroke="#545d6e" stroke-linecap="round" stroke-linejoin="round">
+  <g stroke-width="2">
+    <path d="M166 79 H186 V66 H208"/>
+    <path d="M166 79 H178 V92 H200"/>
+    <path d="M60 24 H78 V38 H96 V47"/>
+  </g>
+  <path d="M48 73 C 32 75 22 87 28 99 C 32 107 24 113 14 109" stroke-width="2.6"/>
+</g>
+
+<!-- The rat, as one node. Reading from the shoulder: the back arches to the ear
+     dome, the forehead runs out into the snout, the jaw returns along the belly
+     past two paws, and the rump closes it. -->
+<path d="M64 56 C 84 50 100 50 116 54 A 12 12 0 0 1 140 54 Q 155 59 165 73 Q 170 77 165 81 L150 90 H138 A 8 8 0 0 1 122 90 H100 A 8 8 0 0 1 84 90 H66 Q 48 90 48 78 V68 Q 48 56 64 56 Z"
+      fill="#161922" stroke="#5fafff" stroke-width="3" stroke-linejoin="round"/>
+
+<circle cx="60" cy="24" r="3.2" fill="#545d6e"/>
+<g fill="#5fafff">
+  <circle cx="48" cy="73" r="4"/>
+  <circle cx="96" cy="51" r="4"/>
+</g>
+<circle cx="148" cy="69" r="3.6" fill="#af87ff"/>
+<circle cx="166" cy="79" r="4" fill="#af87ff"/>
+</svg>

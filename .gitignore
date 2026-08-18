@@ -1,0 +1,12 @@
+/target
+
+/notes
+
+.DS_Store
+
+# Tracing output from Next.js tooling run in this directory. Nothing here is a
+# Next.js project; the directory is a by-product.
+/.next
+
+# VHS insists on an Output even when only a Screenshot is wanted (assets/og.tape).
+tmp-*.gif
