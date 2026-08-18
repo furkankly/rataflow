@@ -1,0 +1,85 @@
+---
+// Absolute page URL, derived from `site` in astro.config.mjs. Left undefined until
+// the public domain is settled — a canonical pointing at the wrong host is worse
+// than none, so these tags are omitted rather than guessed.
+const canonical = Astro.site
+  ? new URL(Astro.url.pathname, Astro.site).href
+  : undefined;
+// og:image must be ABSOLUTE — crawlers do not resolve it against the page.
+// Built from `site` for the same reason the canonical is, so it cannot point at
+// a preview deploy.
+const ogImage = Astro.site ? new URL("/og.png", Astro.site).href : undefined;
+import Analytics from "../components/Analytics.astro";
+import Schema from "../components/Schema.astro";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <Analytics />
+    <Schema />
+    <title>rataflow — node-based UIs for the terminal</title>
+    <meta
+      name="description"
+      content="Build node-based UIs in the terminal — from a static diagram to a fully interactive editor. A Rust library built on ratatui, inspired by xyflow."
+    />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    {canonical && <link rel="canonical" href={canonical} />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="rataflow" />
+    {canonical && <meta property="og:url" content={canonical} />}
+    <meta property="og:title" content="rataflow — node-based UIs for the terminal" />
+    <meta
+      property="og:description"
+      content="Build node-based UIs in the terminal — from a static diagram to a fully interactive editor. A Rust library built on ratatui, inspired by xyflow."
+    />
+
+    {
+      ogImage && (
+        <>
+          <meta property="og:image" content={ogImage} />
+          <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="630" />
+          <meta
+            property="og:image:alt"
+            content="A node graph rendered in a terminal: nested nodes, routed box-drawing edges, a sparkline widget node and a minimap."
+          />
+        </>
+      )
+    }
+
+    {/* summary_large_image, not summary: `summary` is the small square
+        thumbnail, which shrinks a 1200x630 screenshot into an unreadable
+        crop. The wide card is the whole reason for making one. */}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="rataflow — node-based UIs for the terminal" />
+    <meta
+      name="twitter:description"
+      content="Build node-based UIs in the terminal — from a static diagram to a fully interactive editor. A Rust library built on ratatui, inspired by xyflow."
+    />
+
+    {ogImage && <meta name="twitter:image" content={ogImage} />}
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body
+    class="h-screen w-screen overflow-hidden bg-bg-primary text-text-primary font-sans antialiased"
+  >
+    <div class="flex flex-col h-full">
+      <slot name="header" />
+      <div class="flex flex-1 min-h-0">
+        <slot name="sidebar" />
+        <slot />
+      </div>
+    </div>
+  </body>
+</html>

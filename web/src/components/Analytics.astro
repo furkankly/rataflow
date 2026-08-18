@@ -1,0 +1,28 @@
+---
+// Both collectors for this site, in one place.
+//
+// - Analytics (Vercel): baseline traffic. Vercel serves its script from a
+//   FIRST-PARTY path, so ad blockers barely touch it — this is the count that
+//   survives when Umami's is blocked.
+// - Umami: self-hosted at umami.furkankly.dev, the same instance furkankly.dev
+//   and flyradar report to, so every project shares one dashboard.
+//
+// The Umami id is public — it ships in the HTML either way — so it's inlined
+// rather than pulled from an env var. That removes a per-project Vercel config
+// step that, if forgotten, silently disables tracking.
+//
+// data-domains is what keeps localhost and *.vercel.app preview builds out of
+// the stats: the script no-ops on any host not listed.
+//
+// is:inline keeps Astro's bundler out of the third-party script.
+import Analytics from '@vercel/analytics/astro';
+---
+
+<Analytics />
+<script
+  is:inline
+  defer
+  src="https://umami.furkankly.dev/script.js"
+  data-website-id="913f2fe9-4dee-434d-ad35-47214b81e865"
+  data-domains="rataflow.furkankly.dev"
+/>

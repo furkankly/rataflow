@@ -1,0 +1,54 @@
+---
+// Structured data. furkankly.dev carries a Person/WebSite/BlogPosting graph;
+// these two had none at all, which is the biggest remaining gap against it.
+//
+// SoftwareSourceCode rather than SoftwareApplication: rataflow is a library you
+// build against, not a program someone installs and runs. The distinction is
+// what `codeRepository` + `programmingLanguage` are for, and it is the honest
+// description of a crate.
+//
+// Escaped the same way as furkankly.dev's: a literal "</script>" inside the
+// JSON would close the tag early. Nothing here contains one, but this is the
+// one place authored text becomes markup.
+const SITE = Astro.site?.href.replace(/\/$/, "") ?? "";
+
+const graph = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareSourceCode",
+      "@id": `${SITE}/#software`,
+      name: "rataflow",
+      description:
+        "Build node-based UIs in the terminal, from a static diagram to a fully interactive editor. A Rust library built on ratatui, inspired by xyflow.",
+      url: SITE,
+      codeRepository: "https://github.com/furkankly/rataflow",
+      programmingLanguage: { "@type": "ComputerLanguage", name: "Rust" },
+      runtimePlatform: "Rust",
+      license: "https://opensource.org/licenses/MIT",
+      author: { "@id": `${SITE}/#author` },
+      image: `${SITE}/og.png`,
+    },
+    {
+      "@type": "Person",
+      "@id": `${SITE}/#author`,
+      name: "Furkan Kalaycioglu",
+      url: "https://furkankly.dev",
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE}/#website`,
+      url: SITE,
+      name: "rataflow",
+      publisher: { "@id": `${SITE}/#author` },
+    },
+  ],
+};
+
+const json = JSON.stringify(graph)
+  .replace(/</g, "\\u003c")
+  .replace(/>/g, "\\u003e")
+  .replace(/&/g, "\\u0026");
+---
+
+<script type="application/ld+json" is:inline set:html={json} />

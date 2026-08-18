@@ -1,0 +1,11 @@
+# Builds the rataflow website wasm bin (this crate) into ../public/wasm/ for the
+# Astro site to load — imported by src/pages/index.astro as
+# `/wasm/rataflow-web.js`.
+#
+# filehash = false keeps the artifact names stable (rataflow-web.js /
+# _bg.wasm) so the page can import them without a build-time hash lookup.
+[build]
+target = "index.html"
+dist = "../public/wasm"
+filehash = false
+release = true

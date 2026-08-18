@@ -1,0 +1,25 @@
+[package]
+name = "rataflow-web"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[[bin]]
+name = "rataflow-web"
+path = "src/main.rs"
+
+[dependencies]
+rataflow = { path = "../..", default-features = false, features = ["sugiyama", "serde", "ratzilla"] }
+rataflow-examples = { path = "../../examples/shared", features = ["serde"] }
+serde_json = "1"
+ratatui = { version = "0.30", default-features = false }
+ratzilla = "0.3.1"
+wasm-bindgen = "0.2"
+web-sys = { version = "0.3", features = ["WheelEvent", "EventTarget", "AddEventListenerOptions", "DomRect", "NodeList"] }
+# ratzilla force-enables ratatui's `layout-cache`, whose global cache is guarded by
+# `critical-section`. wasm32 has no default impl, so linking fails on
+# `_critical_section_1_0_acquire`; the `std` feature registers one (single-threaded
+# wasm never contends).
+critical-section = { version = "1", features = ["std"] }

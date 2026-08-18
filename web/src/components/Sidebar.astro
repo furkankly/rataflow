@@ -1,0 +1,105 @@
+---
+const categories = [
+  {
+    name: "Getting Started",
+    examples: [
+      { slug: "overview", label: "Overview" },
+      { slug: "basic", label: "Basic" },
+      { slug: "view-only", label: "View Only" },
+    ],
+  },
+  {
+    name: "Nodes",
+    examples: [
+      { slug: "custom-nodes", label: "Custom Nodes" },
+      { slug: "node-flags", label: "Node Flags" },
+      { slug: "hierarchy", label: "Hierarchy" },
+    ],
+  },
+  {
+    name: "Edges",
+    examples: [
+      { slug: "custom-edges", label: "Custom Edges" },
+      { slug: "edge-routing", label: "Edge Routing" },
+      { slug: "floating-edges", label: "Floating Edges" },
+      { slug: "animating-edges", label: "Animating Edges" },
+    ],
+  },
+  {
+    name: "Interaction",
+    examples: [
+      { slug: "multi-select", label: "Multi Select" },
+      { slug: "context-menu", label: "Context Menu" },
+      { slug: "custom-bindings", label: "Custom Bindings" },
+      { slug: "validation", label: "Validation" },
+      { slug: "mutations", label: "Mutations" },
+      { slug: "events", label: "Events" },
+      { slug: "reconnection", label: "Reconnection" },
+    ],
+  },
+  {
+    name: "Customization",
+    examples: [
+      { slug: "companion-widgets", label: "Companion Widgets" },
+      { slug: "theming", label: "Theming" },
+      { slug: "custom-layout", label: "Custom Layout" },
+    ],
+  },
+  {
+    name: "Snapshots",
+    examples: [
+      { slug: "undo-redo", label: "Undo / Redo" },
+      { slug: "save-restore", label: "Save / Restore" },
+    ],
+  },
+  {
+    name: "Performance",
+    examples: [{ slug: "stress-test", label: "Stress Test" }],
+  },
+];
+---
+
+<nav
+  class="w-52 shrink-0 bg-bg-secondary border-r border-border overflow-y-auto py-3 hidden md:block"
+>
+  <div class="flex flex-col gap-4">
+    {
+      categories.map((cat) => (
+        <div>
+          <h3 class="px-4 mb-0.5 text-[10px] font-medium text-text-secondary uppercase tracking-widest">
+            {cat.name}
+          </h3>
+          <ul>
+            {cat.examples.map((ex) => (
+              <li>
+                <a
+                  href={`#${ex.slug}`}
+                  class="sidebar-link block mx-2 px-2 py-1 text-[13px] text-text-secondary rounded-md hover:text-text-primary hover:bg-bg-hover transition-all duration-150"
+                  data-slug={ex.slug}
+                >
+                  {ex.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+</nav>
+
+<script>
+  function updateActive() {
+    const hash = location.hash.slice(1) || "overview";
+    document.querySelectorAll(".sidebar-link").forEach((link) => {
+      const el = link as HTMLElement;
+      const isActive = el.dataset.slug === hash;
+      el.classList.toggle("text-accent-blue", isActive);
+      el.classList.toggle("bg-accent-blue-dim/20", isActive);
+      el.classList.toggle("text-text-secondary", !isActive);
+    });
+  }
+
+  updateActive();
+  window.addEventListener("hashchange", updateActive);
+</script>

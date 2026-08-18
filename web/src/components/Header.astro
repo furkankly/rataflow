@@ -1,0 +1,84 @@
+---
+---
+
+<header
+  class="flex justify-between items-center px-5 h-12 bg-bg-secondary/80 backdrop-blur-md border-b border-border shrink-0 z-10"
+>
+  <div class="flex items-center gap-3">
+    <a href="#basic" class="flex items-center gap-2.5 group">
+      {/* The mascot, inlined and stripped of the ink card it carries as a
+          favicon — the header already supplies the ground, and a rounded dark
+          square sitting on a rounded dark bar reads as a rendering fault.
+          Source of truth is assets/icon.svg; this is the same geometry. */}
+      <svg
+        viewBox="0 0 32 32"
+        width="20"
+        height="20"
+        aria-hidden="true"
+        class="shrink-0 overflow-visible"
+      >
+        <path
+          d="M6 15 C 3.5 16.5 3 20 4.5 22.5 C 5.4 24 4 25.5 2.5 25"
+          fill="none"
+          stroke="#545d6e"
+          stroke-width="1.7"
+          stroke-linecap="round"
+          stroke-linejoin="round"></path>
+        <path
+          d="M10 9.5 C 13 8 16 8 18 9 A 2.8 2.8 0 0 1 23.6 9 Q 25.6 10.5 26.8 13.5 Q 27.8 15 26.8 16 L23 19.5 H10 Q 6 19.5 6 16 V13 Q 6 9.5 10 9.5 Z"
+          fill="#161922"
+          stroke="#5fafff"
+          stroke-width="2"
+          stroke-linejoin="round"></path>
+        <circle cx="6" cy="15" r="1.7" fill="#5fafff"></circle>
+        <circle cx="21.5" cy="13.2" r="1.05" fill="#af87ff"></circle>
+        <circle cx="27.1" cy="15.6" r="1.6" fill="#af87ff"></circle>
+      </svg>
+      {/* h1, not a span: this is a single-page site and it had NO h1 at all — the
+          only headings in the document were the sidebar's h3 group labels, so
+          nothing told a crawler what the page is. Tailwind's preflight zeroes
+          h1 margins and font-size, so with the same classes it renders
+          identically. */}
+      <h1 class="text-sm font-semibold text-accent-blue font-mono tracking-tight">rataflow</h1>
+    </a>
+    <span class="text-text-secondary text-xs hidden sm:inline">Node-based UIs for the terminal</span>
+  </div>
+  <div class="flex items-center gap-1">
+    <button
+      id="install-btn"
+      class="px-2.5 py-1 text-xs font-mono text-text-secondary hover:text-accent-blue border border-border rounded-md hover:border-accent-blue-dim transition-colors cursor-pointer hidden sm:block"
+      title="Copy to clipboard"
+    >cargo add rataflow</button>
+    <span class="w-px h-4 bg-border hidden sm:block"></span>
+    <a
+      href="https://github.com/furkankly/rataflow"
+      target="_blank"
+      class="px-2.5 py-1 text-xs text-text-secondary hover:text-text-primary rounded-md hover:bg-bg-hover transition-colors"
+      >GitHub</a
+    >
+    <a
+      href="https://docs.rs/rataflow"
+      target="_blank"
+      class="px-2.5 py-1 text-xs text-text-secondary hover:text-text-primary rounded-md hover:bg-bg-hover transition-colors"
+      >docs.rs</a
+    >
+    <a
+      href="https://crates.io/crates/rataflow"
+      target="_blank"
+      class="px-2.5 py-1 text-xs text-text-secondary hover:text-text-primary rounded-md hover:bg-bg-hover transition-colors"
+      >crates.io</a
+    >
+  </div>
+</header>
+
+<script>
+  const btn = document.getElementById("install-btn");
+  if (btn) {
+    btn.addEventListener("click", async () => {
+      await navigator.clipboard.writeText("cargo add rataflow");
+      const original = btn.textContent;
+      btn.textContent = "copied!";
+      setTimeout(() => (btn.textContent = original), 1500);
+    });
+  }
+</script>

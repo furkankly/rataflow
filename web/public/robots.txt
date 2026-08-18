@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://rataflow.furkankly.dev/sitemap-index.xml

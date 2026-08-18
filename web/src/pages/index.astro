@@ -1,0 +1,18 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Sidebar from "../components/Sidebar.astro";
+import ExampleViewer from "../components/ExampleViewer.astro";
+import "../styles/global.css";
+---
+
+<Layout>
+  <Header slot="header" />
+  <Sidebar slot="sidebar" />
+  <ExampleViewer />
+</Layout>
+
+<script is:inline type="module">
+  import init from '/wasm/rataflow-web.js';
+  await init({ module_or_path: '/wasm/rataflow-web_bg.wasm' });
+</script>

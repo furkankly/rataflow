@@ -1,0 +1,6 @@
+dist/
+target/
+public/wasm/
+
+node_modules/
+.astro/
