@@ -1,0 +1,11 @@
+# configuration for https://release-plz.dev
+
+[workspace]
+# cliff.toml is the single source of truth for the changelog: release-plz drives
+# git-cliff with it rather than keeping a second, divergent template.
+changelog_config = "cliff.toml"
+
+# Publish only when a release PR is merged, never on an ordinary push to main.
+# The default reconciles the registry against the manifest on every run, which
+# would publish any version bump the moment it lands.
+release_always = false

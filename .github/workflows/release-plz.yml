@@ -1,0 +1,71 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  # Publishes to crates.io, tags, and cuts the GitHub release. With
+  # `release_always = false` in release-plz.toml this only acts on a merged
+  # release PR; every other push to main is a no-op.
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
+      # Trusted publishing: crates.io authenticates this workflow by its GitHub
+      # OIDC identity and issues a credential that lives for the run, so no
+      # long-lived registry token exists to store or rotate. Requires the crate
+      # to be registered for trusted publishing on crates.io against this
+      # repository and this workflow filename.
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # git-cliff walks the whole history to build the changelog.
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+      - name: Run release-plz
+        uses: release-plz/action@v0.5
+        with:
+          command: release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+  # Opens (and keeps updating) the PR that carries the version bump and the
+  # changelog entry. Merging it is what triggers the job above.
+  release-pr:
+    name: Release PR
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    # Never cancel in progress: a half-written release PR is worse than a slow
+    # one, and these runs are cheap.
+    concurrency:
+      group: release-plz-${{ github.ref }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+      - name: Run release-plz
+        uses: release-plz/action@v0.5
+        with:
+          command: release-pr
+        env:
+          # A PAT rather than the default GITHUB_TOKEN: pull requests opened
+          # with GITHUB_TOKEN do not trigger workflows, so the release PR would
+          # sit there with no CI run on the very commit about to be published.
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          # No registry token: this job only reads the public index to work out
+          # the next version, and publishing happens in the job above.

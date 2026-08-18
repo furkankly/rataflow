@@ -1,0 +1,190 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+env:
+  CARGO_TERM_COLOR: always
+
+# A second push to the same PR cancels the first. `github.run_id` as the
+# fallback keeps pushes to main from cancelling each other.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  fmt:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - name: Check formatting
+        run: cargo fmt --all --check
+
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+      - name: Lint
+        run: cargo clippy --workspace --all-targets --all-features -- -D warnings
+
+  test:
+    name: Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      # `--all-features` turns on termion, which is Unix-only. Windows gets the
+      # default feature set instead — the tests being exercised are the
+      # backend-agnostic ones (coordinate transforms, hit detection, path
+      # computation, graph validation) either way.
+      - name: Run tests
+        shell: bash
+        run: |
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            cargo test --workspace --locked
+          else
+            cargo test --workspace --locked --all-features
+          fi
+
+  # The feature flags are the crate's public surface as much as the types are:
+  # `default-features = false` is what the ratzilla frontend and any embedder
+  # uses, and each backend feature has to stand alone. Checking only the default
+  # set lets a broken combination ship.
+  features:
+    name: Check ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: no default features
+            args: --lib --no-default-features
+          - name: sugiyama only
+            args: --lib --no-default-features --features sugiyama
+          - name: serde only
+            args: --lib --no-default-features --features serde
+          - name: crossterm backend
+            args: --lib --no-default-features --features crossterm
+          - name: termion backend
+            args: --lib --no-default-features --features termion
+          - name: termwiz backend
+            args: --lib --no-default-features --features termwiz
+          - name: all features
+            args: --lib --all-features
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Check
+        run: cargo check --locked ${{ matrix.args }}
+
+  # The website compiles this crate to WASM (web/wasm, via trunk), so a break
+  # here takes the site down with it. This is also the only coverage the wasm32
+  # target gets: docs.rs builds the host target alone, because `all-features`
+  # pulls in native backends that cannot compile for wasm32.
+  wasm:
+    name: Check wasm32
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+      - name: Check with ratzilla
+        run: >
+          cargo check --lib --locked --target wasm32-unknown-unknown
+          --no-default-features --features ratzilla,sugiyama,serde
+
+  # Mirrors the [package.metadata.docs.rs] config (all features, host target),
+  # so a docs.rs build failure shows up here instead of on the release.
+  docs:
+    name: Docs
+    runs-on: ubuntu-latest
+    env:
+      RUSTDOCFLAGS: -D warnings
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Build docs
+        run: cargo doc --locked --all-features --no-deps
+
+  # `include` in Cargo.toml is an allow-list, and README.md is load-bearing
+  # (lib.rs does `#![doc = include_str!("../README.md")]`). Packaging on every
+  # PR proves the tarball still builds standalone, rather than finding out at
+  # `cargo publish` time when the tag is already pushed.
+  package:
+    name: Package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Verify the published tarball
+        run: cargo publish --dry-run --locked
+
+  msrv:
+    name: MSRV
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Read rust-version from Cargo.toml
+        id: msrv
+        run: |
+          version=$(cargo metadata --no-deps --format-version 1 \
+            | jq -r '.packages[] | select(.name == "rataflow") | .rust_version')
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - name: Install Rust ${{ steps.msrv.outputs.version }}
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ steps.msrv.outputs.version }}
+      - uses: Swatinem/rust-cache@v2
+      - name: Check
+        run: cargo check --lib --locked --all-features
+
+  typos:
+    name: Typos
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: crate-ci/typos@master
+
+  # cliff.toml sets filter_unconventional = true: a commit that does not parse
+  # as a conventional commit is silently dropped from the changelog. This job is
+  # what keeps that from happening quietly.
+  commits:
+    name: Lint commits
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: crate-ci/committed@master
+        with:
+          args: "-vv"
+          commits: ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}

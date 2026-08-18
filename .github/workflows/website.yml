@@ -1,0 +1,107 @@
+name: Website
+
+# The site compiles the crate itself to WASM (web/wasm, via trunk), so a change
+# to src/ can break the build just as easily as a change to web/. Both are
+# triggers; both are built on PRs and only deployed from main.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "web/**"
+      - "src/**"
+      - "assets/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - ".github/workflows/website.yml"
+  pull_request:
+    paths:
+      - "web/**"
+      - "src/**"
+      - "assets/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - ".github/workflows/website.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: website-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: web/wasm
+
+      - name: Install trunk
+        uses: taiki-e/install-action@v2
+        with:
+          tool: trunk
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 10
+
+      - name: Install Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+
+      - name: Install website dependencies
+        working-directory: web
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        working-directory: web
+        run: bash scripts/build.sh
+
+      # Pull requests stop here: the build runs so a broken site fails the PR,
+      # and the artifact is only handed on when there is something to deploy.
+      - name: Upload the site
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v7
+        with:
+          name: site
+          path: web/dist
+          retention-days: 1
+
+  # Split from the build so that `environment:` only ever applies to a real
+  # deploy. `environment:` cannot be conditional, so leaving it on a job that
+  # also runs for pull requests would file every PR build as a production
+  # deployment. This job is what puts the live URL in the repo's sidebar.
+  deploy:
+    name: Deploy
+    needs: build
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://rataflow.furkankly.dev
+    steps:
+      - name: Download the site
+        uses: actions/download-artifact@v8
+        with:
+          name: site
+          path: dist
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Deploy to Vercel
+        run: vercel deploy --prod dist --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

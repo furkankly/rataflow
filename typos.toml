@@ -1,0 +1,6 @@
+# configuration for https://github.com/crate-ci/typos
+
+[default.extend-words]
+# The dictionary reads it as a misspelling of "ratatouille". It is the library
+# this crate is built on, and half of its own name.
+ratatui = "ratatui"

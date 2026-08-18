@@ -1,0 +1,42 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore(deps)"
+
+  # The crate's own dependencies. Deliberately minimal (see CLAUDE.md), so a
+  # single grouped PR per week is the right granularity.
+  - package-ecosystem: "cargo"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      cargo-dependencies:
+        patterns: ["*"]
+    commit-message:
+      prefix: "chore(deps)"
+
+  # The website's wasm frontend resolves as its own workspace with its own
+  # lockfile, so cargo has to be told about it separately.
+  - package-ecosystem: "cargo"
+    directory: "/web/wasm"
+    schedule:
+      interval: "weekly"
+    groups:
+      wasm-dependencies:
+        patterns: ["*"]
+    commit-message:
+      prefix: "chore(deps)"
+
+  - package-ecosystem: "npm"
+    directory: "/web"
+    schedule:
+      interval: "weekly"
+    groups:
+      npm-dependencies:
+        patterns: ["*"]
+    commit-message:
+      prefix: "chore(deps)"
