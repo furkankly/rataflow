@@ -1099,7 +1099,6 @@ dependencies = [
  "rataflow-examples",
  "ratatui",
  "ratzilla",
- "serde_json",
  "wasm-bindgen",
  "web-sys",
 ]

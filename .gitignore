@@ -10,3 +10,5 @@
 
 # VHS insists on an Output even when only a Screenshot is wanted (assets/og.tape).
 tmp-*.gif
+
+/.playwright-mcp

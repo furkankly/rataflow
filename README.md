@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/icon.svg" alt="" width="80">
+  <img src="https://raw.githubusercontent.com/furkankly/rataflow/main/assets/icon.svg" alt="" width="80">
 </p>
 
 <h1 align="center">rataflow</h1>
@@ -21,12 +21,12 @@
 </p>
 
 <p align="center">
-  <img src="assets/rataflow.svg" alt="A terminal canvas with two nodes wired by a step edge: a shell running tail -f, and a live request-rate sparkline" width="620">
+  <img src="https://raw.githubusercontent.com/furkankly/rataflow/main/assets/rataflow.svg" alt="A terminal canvas with two nodes wired by a step edge: a shell running tail -f, and a live request-rate sparkline" width="620">
 </p>
 
 rataflow is a library for building node-based UIs in the terminal, from a static diagram to a fully interactive editor. Built on [ratatui](https://github.com/ratatui/ratatui), inspired by [xyflow](https://github.com/xyflow/xyflow) (React Flow).
 
-![rataflow demo](assets/overview.gif)
+![rataflow demo](https://raw.githubusercontent.com/furkankly/rataflow/main/assets/overview.gif)
 
 ## Installation
 
