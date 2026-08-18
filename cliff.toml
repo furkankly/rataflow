@@ -54,7 +54,14 @@ body = """
 {% endif %}
 
 {%- macro remote_url() -%}
+{#- release-plz drives git-cliff with its own remote context, where the repo is
+    remote.owner/remote.repo; git-cliff on its own reads [remote.github] from
+    this file. Support both, or the Full Changelog link fails to render. -#}
+{%- if remote.owner -%}
+  https://github.com/{{ remote.owner }}/{{ remote.repo }}
+{%- else -%}
   https://github.com/{{ remote.github.owner }}/{{ remote.github.repo }}
+{%- endif -%}
 {%- endmacro -%}
 """
 # template for the changelog footer
@@ -88,6 +95,9 @@ commit_parsers = [
   { message = "^style", group = "<!-- 5 -->🎨 Styling" },
   { message = "^test", group = "<!-- 6 -->🧪 Testing" },
   { message = "^chore\\(release\\): prepare for", skip = true },
+  # release-plz names its own commit `chore: release` and stamps a zeroed id.
+  { message = "^chore: release", skip = true },
+  { field = "id", pattern = "0000000", skip = true },
   { message = "^chore\\(deps.*\\)", skip = true },
   { message = "^chore\\(pr\\)", skip = true },
   { message = "^chore\\(pull\\)", skip = true },
