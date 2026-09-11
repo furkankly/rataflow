@@ -9,21 +9,71 @@ const canonical = Astro.site
 // Built from `site` for the same reason the canonical is, so it cannot point at
 // a preview deploy.
 const ogImage = Astro.site ? new URL("/og.png", Astro.site).href : undefined;
+import { ClientRouter } from "astro:transitions";
 import Analytics from "../components/Analytics.astro";
 import Schema from "../components/Schema.astro";
+
+// Per-page title and description. The examples each set their own (see
+// src/pages/examples/[slug].astro); `/` keeps the site-level pair as the
+// defaults, which is what every page used to get.
+interface Props {
+  title?: string;
+  description?: string;
+  /** The drawer's default state for this page, before any stored preference. */
+  panelOpen?: boolean;
+}
+const {
+  title = "rataflow — node-based UIs for the terminal",
+  description = "Build node-based UIs in the terminal — from a static diagram to a fully interactive editor. A Rust library built on ratatui, inspired by xyflow.",
+  panelOpen = false,
+} = Astro.props;
 ---
 
-<html lang="en">
+<html lang="en" data-panel={panelOpen ? "open" : "closed"}>
   <head>
+    {/* The drawer's state, settled BEFORE the first paint.
+        
+        It used to be a `data-open` attribute on the drawer itself, with the
+        stored preference applied in `mount()` on `astro:page-load` — which runs
+        after the page has painted. So someone who had collapsed the drawer and
+        then opened an example route got a frame of it open, the wasm sometimes
+        measuring the short container in that frame, and a jump once the script
+        caught up. Whether it looked wrong depended on which won the race.
+        
+        Hence `<html data-panel>`, rendered with the page's own default and
+        corrected here by a blocking inline script before the body is parsed.
+        The stylesheet keys off this, so there is nothing left to correct
+        afterwards. Same shape as the usual fix for a theme flash. */}
+    <script is:inline>
+      try {
+        var stored = localStorage.getItem("rataflow:panel-open");
+        if (stored !== null) {
+          document.documentElement.dataset.panel = stored === "true" ? "open" : "closed";
+        }
+      } catch (e) {
+        // Private windows and blocked site data throw here; the page default stands.
+      }
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {/* Client-side routing, from the framework rather than by hand. Every
+        example is the same 2.4 MB wasm, so following a sidebar link as an
+        ordinary navigation would re-fetch the document and re-instantiate it
+        each time. This swaps the body instead and — with `transition:persist`
+        on the viewer — leaves the canvas and its WebGL context alone.
+
+        It replaced about a hundred lines of hand-rolled router: fetch, parse,
+        a page cache, pushState, popstate, swapping <head>, syncing the sidebar
+        highlight. All of that is this component's job, and it also does the two
+        things the hand-rolled one did not — restore scroll position and move
+        focus — which is what makes the route change perceivable to a screen
+        reader. Browsers without the View Transitions API fall back to ordinary
+        navigation, which still works because every route is prerendered. */}
+    <ClientRouter />
     <Analytics />
     <Schema />
-    <title>rataflow — node-based UIs for the terminal</title>
-    <meta
-      name="description"
-      content="Build node-based UIs in the terminal — from a static diagram to a fully interactive editor. A Rust library built on ratatui, inspired by xyflow."
-    />
+    <title>{title}</title>
+    <meta name="description" content={description} />
 
     {/* Google Search cannot read an SVG favicon — its supported list is BMP,
         GIF, ICO, PNG, JPEG, PPM and TIFF — and with `/favicon.svg` the only
@@ -43,11 +93,8 @@ import Schema from "../components/Schema.astro";
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="rataflow" />
     {canonical && <meta property="og:url" content={canonical} />}
-    <meta property="og:title" content="rataflow — node-based UIs for the terminal" />
-    <meta
-      property="og:description"
-      content="Build node-based UIs in the terminal — from a static diagram to a fully interactive editor. A Rust library built on ratatui, inspired by xyflow."
-    />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
 
     {
       ogImage && (
@@ -67,11 +114,8 @@ import Schema from "../components/Schema.astro";
         thumbnail, which shrinks a 1200x630 screenshot into an unreadable
         crop. The wide card is the whole reason for making one. */}
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="rataflow — node-based UIs for the terminal" />
-    <meta
-      name="twitter:description"
-      content="Build node-based UIs in the terminal — from a static diagram to a fully interactive editor. A Rust library built on ratatui, inspired by xyflow."
-    />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
 
     {ogImage && <meta name="twitter:image" content={ogImage} />}
 
@@ -89,7 +133,13 @@ import Schema from "../components/Schema.astro";
       <slot name="header" />
       <div class="flex flex-1 min-h-0">
         <slot name="sidebar" />
-        <slot />
+        {/* The viewer takes what is left of the column and the drawer sits
+            under it, so opening the drawer shortens the canvas rather than
+            covering it. */}
+        <div class="flex-1 flex flex-col min-w-0 min-h-0">
+          <slot />
+          <slot name="panel" />
+        </div>
       </div>
     </div>
   </body>

@@ -1,7 +1,87 @@
 ---
+// The canvas the wasm draws into.
+//
+// `transition:persist` is what makes client-side routing worth having here: on
+// navigation the ClientRouter replaces the whole <body>, and without it this
+// element — and the WebGL context and the 2.4 MB wasm module behind it — would
+// be destroyed and rebuilt for every example. Persisted, it is moved across to
+// the new DOM untouched, and the wasm is instantiated once per session.
+//
+// `min-h-0` is load-bearing on both elements. A flex item defaults to
+// `min-height: auto`, which means it will not shrink below its content — and
+// the content here is a canvas that beamterm sizes in explicit pixels. Without
+// it, opening the drawer cannot take height back from the viewer: the canvas
+// holds the column open and the drawer is pushed off the bottom of the screen.
 ---
 
-<main class="flex-1 flex flex-col min-w-0 relative bg-bg-primary">
-  <div id="terminal-container" class="flex-1 overflow-hidden">
-  </div>
+<main class="flex-1 flex flex-col min-w-0 min-h-0 relative bg-bg-primary">
+  <div id="terminal-container" class="flex-1 min-h-0 overflow-hidden" transition:persist></div>
 </main>
+
+<script>
+  // Keep the canvas the size of its container.
+  //
+  // ratzilla re-measures every frame, but it compares the canvas to ITS OWN
+  // client size, and beamterm's auto-CSS-resize writes that as explicit pixels
+  // (`width: 1232px; height: 437px`). So once drawn, the canvas is pinned: the
+  // container can grow or shrink around it and the comparison never notices,
+  // which left a dead gap under the canvas whenever the drawer closed.
+  //
+  // Setting the CSS size back to a percentage hands the measurement back to the
+  // container for one frame. ratzilla then sees client != buffer, resizes, and
+  // re-pins at the new size — which is what we want it to do.
+  //
+  // A ResizeObserver rather than a hook on the drawer's toggle: the box changes
+  // for more reasons than that one (window resize, the sidebar's md: breakpoint,
+  // a devtools split), and all of them want the same response.
+  function watch() {
+    const container = document.getElementById("terminal-container");
+    if (!container || container.dataset.watched) return;
+    // The container is persisted across navigations, so the observers set up on
+    // the first page are still watching the same element. Marking it keeps a
+    // second set from being attached on every route change.
+    container.dataset.watched = "true";
+
+    let queued = false;
+    const refit = () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => {
+        queued = false;
+        const canvas = container.querySelector("canvas");
+        if (!canvas) return;
+        // Only when it actually disagrees with the box, so we are not fighting
+        // ratzilla for the style attribute on every frame.
+        const box = container.getBoundingClientRect();
+        const seen = canvas.getBoundingClientRect();
+        if (Math.abs(box.width - seen.width) < 1 && Math.abs(box.height - seen.height) < 1) return;
+        canvas.style.width = "100%";
+        canvas.style.height = "100%";
+      });
+    };
+
+    new ResizeObserver(refit).observe(container);
+    // The canvas does not exist until the wasm boots, and the first box change
+    // usually predates it.
+    new MutationObserver(refit).observe(container, { childList: true });
+  }
+
+  watch();
+  document.addEventListener("astro:page-load", watch);
+
+  // Tell the wasm the URL changed.
+  //
+  // Its canvas is `transition:persist`ed, so unlike the rest of the body it is
+  // NOT replaced on navigation — the module and its WebGL context survive, and
+  // only the graph inside them needs to change. It reads the slug back off
+  // `location.pathname` itself (`current_slug` in web/wasm/src/main.rs), so
+  // this only has to say "look again".
+  //
+  // `astro:after-swap`, not `astro:page-load`: the new document is in place and
+  // the URL is current, but the transition has not painted yet, so the new
+  // graph arrives in the same frame as the rest of the page instead of the old
+  // one flashing first.
+  document.addEventListener("astro:after-swap", () =>
+    window.dispatchEvent(new Event("rataflow:navigate")),
+  );
+</script>

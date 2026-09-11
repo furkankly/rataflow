@@ -1,16 +1,44 @@
 ---
+// The overview, at `/`.
+//
+// It keeps the site-level title and description rather than the overview's own:
+// this is the page someone lands on for "rataflow", and it should describe the
+// library, not one of its examples. The other twenty-two examples each get
+// their own route under /examples/ (see src/pages/examples/[slug].astro).
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
 import Sidebar from "../components/Sidebar.astro";
 import ExampleViewer from "../components/ExampleViewer.astro";
+import ExamplePanel from "../components/ExamplePanel.astro";
+import { examples, ROOT_SLUG, allSlugs } from "../lib/examples";
 import "../styles/global.css";
+
+const overview = examples().find((e) => e.slug === ROOT_SLUG)!;
+// Emitted into the redirect below so it cannot drift from the routes that were
+// actually generated.
+const slugs = allSlugs().filter((s) => s !== ROOT_SLUG);
 ---
 
-<Layout>
+<Layout panelOpen={false}>
   <Header slot="header" />
-  <Sidebar slot="sidebar" />
+  <Sidebar slot="sidebar" activeSlug={ROOT_SLUG} />
   <ExampleViewer />
+  {/* Shut here: `/` is the app screen someone arrives at to look at the graph,
+      not to read. On an example's own route it opens, because reading about
+      that example is why you followed the link. */}
+  <ExamplePanel slot="panel" example={overview} />
 </Layout>
+
+{/* Every example used to be `/#slug`, and those links are in people's history,
+    in chat logs and on other sites. Send them to the real route before the wasm
+    boots, so an old link lands on the same example at the URL that now owns it
+    — `replace`, not `assign`, so the back button does not bounce off `/`. */}
+<script is:inline define:vars={{ slugs }}>
+  const hash = location.hash.slice(1);
+  if (hash && slugs.includes(hash)) {
+    location.replace(`/examples/${hash}/`);
+  }
+</script>
 
 <script is:inline type="module">
   import init from '/wasm/rataflow-web.js';

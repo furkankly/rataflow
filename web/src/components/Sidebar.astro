@@ -1,105 +1,103 @@
 ---
-const categories = [
-  {
-    name: "Getting Started",
-    examples: [
-      { slug: "overview", label: "Overview" },
-      { slug: "basic", label: "Basic" },
-      { slug: "view-only", label: "View Only" },
-    ],
-  },
-  {
-    name: "Nodes",
-    examples: [
-      { slug: "custom-nodes", label: "Custom Nodes" },
-      { slug: "node-flags", label: "Node Flags" },
-      { slug: "hierarchy", label: "Hierarchy" },
-    ],
-  },
-  {
-    name: "Edges",
-    examples: [
-      { slug: "custom-edges", label: "Custom Edges" },
-      { slug: "edge-routing", label: "Edge Routing" },
-      { slug: "floating-edges", label: "Floating Edges" },
-      { slug: "animating-edges", label: "Animating Edges" },
-    ],
-  },
+// The example nav.
+//
+// Only the GROUPING lives here now. The labels used to be a second copy of each
+// example's title, typed out beside its slug; they come from the registry
+// instead (`rataflow_examples::meta`, via web-examples), so renaming an example
+// in Rust renames it here. What is left is which examples belong under which
+// heading, which is a website decision and has no Rust to read it from.
+//
+// The links are real URLs. They were `#slug` fragments, which meant the whole
+// site was one page to a crawler — see src/pages/examples/[slug].astro.
+import { examples, ROOT_SLUG } from "../lib/examples";
+
+interface Props {
+  /** Which example the page is showing; `overview` on `/`. */
+  activeSlug?: string;
+}
+const { activeSlug = ROOT_SLUG } = Astro.props;
+
+const byslug = new Map(examples().map((e) => [e.slug, e]));
+
+const categories: { name: string; slugs: string[] }[] = [
+  { name: "Getting Started", slugs: ["overview", "basic", "view-only"] },
+  { name: "Nodes", slugs: ["custom-nodes", "node-flags", "hierarchy"] },
+  { name: "Edges", slugs: ["custom-edges", "edge-routing", "floating-edges", "animating-edges"] },
   {
     name: "Interaction",
-    examples: [
-      { slug: "multi-select", label: "Multi Select" },
-      { slug: "context-menu", label: "Context Menu" },
-      { slug: "custom-bindings", label: "Custom Bindings" },
-      { slug: "validation", label: "Validation" },
-      { slug: "mutations", label: "Mutations" },
-      { slug: "events", label: "Events" },
-      { slug: "reconnection", label: "Reconnection" },
+    slugs: [
+      "multi-select",
+      "context-menu",
+      "custom-bindings",
+      "validation",
+      "mutations",
+      "events",
+      "reconnection",
     ],
   },
-  {
-    name: "Customization",
-    examples: [
-      { slug: "companion-widgets", label: "Companion Widgets" },
-      { slug: "theming", label: "Theming" },
-      { slug: "custom-layout", label: "Custom Layout" },
-    ],
-  },
-  {
-    name: "Snapshots",
-    examples: [
-      { slug: "undo-redo", label: "Undo / Redo" },
-      { slug: "save-restore", label: "Save / Restore" },
-    ],
-  },
-  {
-    name: "Performance",
-    examples: [{ slug: "stress-test", label: "Stress Test" }],
-  },
+  { name: "Customization", slugs: ["companion-widgets", "theming", "custom-layout"] },
+  { name: "Snapshots", slugs: ["undo-redo", "save-restore"] },
+  { name: "Performance", slugs: ["stress-test"] },
 ];
+
+// A slug in a category with no example behind it is a typo that would otherwise
+// render as a blank row, so it fails the build instead.
+for (const cat of categories) {
+  for (const slug of cat.slugs) {
+    if (!byslug.has(slug)) {
+      throw new Error(`Sidebar: no example named "${slug}" (in category "${cat.name}")`);
+    }
+  }
+}
+
+/** The overview is served at `/`; everything else at its own route. */
+const href = (slug: string) => (slug === ROOT_SLUG ? "/" : `/examples/${slug}/`);
 ---
 
+{/* The group labels were `h3`, which put "Getting Started", "Nodes", "Edges"
+    into the document outline as if the page had sections by those names. They
+    are nav labels, so they label their list instead — which is also the better
+    screen-reader pattern, since a labelled list is navigable where a loose `h3`
+    only adds a landmark that leads nowhere. The one real heading is the
+    wordmark's `h1` in Header.astro. */}
 <nav
+  aria-label="Examples"
   class="w-52 shrink-0 bg-bg-secondary border-r border-border overflow-y-auto py-3 hidden md:block"
 >
   <div class="flex flex-col gap-4">
     {
-      categories.map((cat) => (
-        <div>
-          <h3 class="px-4 mb-0.5 text-[10px] font-medium text-text-secondary uppercase tracking-widest">
-            {cat.name}
-          </h3>
-          <ul>
-            {cat.examples.map((ex) => (
-              <li>
-                <a
-                  href={`#${ex.slug}`}
-                  class="sidebar-link block mx-2 px-2 py-1 text-[13px] text-text-secondary rounded-md hover:text-text-primary hover:bg-bg-hover transition-all duration-150"
-                  data-slug={ex.slug}
-                >
-                  {ex.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))
+      categories.map((cat) => {
+        const id = `nav-${cat.name.toLowerCase().replace(/\s+/g, "-")}`;
+        return (
+          <div>
+            <div
+              id={id}
+              class="px-4 mb-0.5 text-[10px] font-medium text-text-secondary uppercase tracking-widest"
+            >
+              {cat.name}
+            </div>
+            <ul aria-labelledby={id}>
+              {cat.slugs.map((slug) => (
+                <li>
+                  <a
+                    href={href(slug)}
+                    aria-current={slug === activeSlug ? "page" : undefined}
+                    class:list={[
+                      "sidebar-link block mx-2 px-2 py-1 text-[13px] rounded-md transition-all duration-150",
+                      slug === activeSlug
+                        ? "text-text-primary bg-bg-hover"
+                        : "text-text-secondary hover:text-text-primary hover:bg-bg-hover",
+                    ]}
+                    data-slug={slug}
+                  >
+                    {byslug.get(slug)!.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      })
     }
   </div>
 </nav>
-
-<script>
-  function updateActive() {
-    const hash = location.hash.slice(1) || "overview";
-    document.querySelectorAll(".sidebar-link").forEach((link) => {
-      const el = link as HTMLElement;
-      const isActive = el.dataset.slug === hash;
-      el.classList.toggle("text-accent-blue", isActive);
-      el.classList.toggle("bg-accent-blue-dim/20", isActive);
-      el.classList.toggle("text-text-secondary", !isActive);
-    });
-  }
-
-  updateActive();
-  window.addEventListener("hashchange", updateActive);
-</script>
