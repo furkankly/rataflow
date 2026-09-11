@@ -67,7 +67,11 @@ fn main() {
             out.push_str(&format!("[\"{}\", \"{}\"]", esc(key), esc(action)));
         }
         out.push_str("]\n");
-        out.push_str(if i + 1 == examples.len() { "  }\n" } else { "  },\n" });
+        out.push_str(if i + 1 == examples.len() {
+            "  }\n"
+        } else {
+            "  },\n"
+        });
     }
     out.push_str("]\n");
     print!("{out}");

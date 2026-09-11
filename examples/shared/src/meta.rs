@@ -383,7 +383,12 @@ pub struct WebExample {
 /// other is caught rather than silently serving the overview.
 pub fn web_examples() -> Vec<WebExample> {
     fn e(slug: &'static str, source: &'static str, meta: ExampleMeta<'static>) -> WebExample {
-        WebExample { slug, source, web_source: None, meta }
+        WebExample {
+            slug,
+            source,
+            web_source: None,
+            meta,
+        }
     }
     /// An example the browser runs a port of, not the example itself.
     fn ported(
@@ -392,7 +397,12 @@ pub fn web_examples() -> Vec<WebExample> {
         web_source: &'static str,
         meta: ExampleMeta<'static>,
     ) -> WebExample {
-        WebExample { slug, source, web_source: Some(web_source), meta }
+        WebExample {
+            slug,
+            source,
+            web_source: Some(web_source),
+            meta,
+        }
     }
     vec![
         ported(
@@ -408,20 +418,44 @@ pub fn web_examples() -> Vec<WebExample> {
         e("hierarchy", "examples/hierarchy.rs", hierarchy()),
         e("custom-edges", "examples/custom_edges.rs", custom_edges()),
         e("edge-routing", "examples/edge_routing.rs", edge_routing()),
-        e("floating-edges", "examples/floating_edges.rs", floating_edges()),
-        e("animating-edges", "examples/animating_edges.rs", animating_edges()),
+        e(
+            "floating-edges",
+            "examples/floating_edges.rs",
+            floating_edges(),
+        ),
+        e(
+            "animating-edges",
+            "examples/animating_edges.rs",
+            animating_edges(),
+        ),
         e("reconnection", "examples/reconnection.rs", reconnection()),
         e("multi-select", "examples/multi_select.rs", multi_select()),
         e("context-menu", "examples/context_menu.rs", context_menu()),
-        e("custom-bindings", "examples/custom_bindings.rs", custom_bindings()),
+        e(
+            "custom-bindings",
+            "examples/custom_bindings.rs",
+            custom_bindings(),
+        ),
         e("events", "examples/events.rs", events()),
         e("validation", "examples/validation.rs", validation()),
-        e("companion-widgets", "examples/companion_widgets.rs", companion_widgets()),
-        e("custom-layout", "examples/custom_layout.rs", custom_layout()),
+        e(
+            "companion-widgets",
+            "examples/companion_widgets.rs",
+            companion_widgets(),
+        ),
+        e(
+            "custom-layout",
+            "examples/custom_layout.rs",
+            custom_layout(),
+        ),
         e("undo-redo", "examples/undo_redo.rs", undo_redo()),
         e("mutations", "examples/mutations.rs", mutations()),
         e("theming", "examples/theming.rs", theming()),
-        e("save-restore", "examples/save_restore.rs", save_restore(false)),
+        e(
+            "save-restore",
+            "examples/save_restore.rs",
+            save_restore(false),
+        ),
         ported(
             "stress-test",
             "examples/stress_test.rs",
