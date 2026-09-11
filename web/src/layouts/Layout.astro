@@ -25,7 +25,18 @@ import Schema from "../components/Schema.astro";
       content="Build node-based UIs in the terminal — from a static diagram to a fully interactive editor. A Rust library built on ratatui, inspired by xyflow."
     />
 
+    {/* Google Search cannot read an SVG favicon — its supported list is BMP,
+        GIF, ICO, PNG, JPEG, PPM and TIFF — and with `/favicon.svg` the only
+        icon declared and no `/favicon.ico` at the root to fall back on, search
+        results showed the default globe. The .ico (16/32/48, rasterised from
+        the same mascot by web/scripts/favicon.mjs) is what Google reads; the
+        SVG stays because browsers that understand it get an icon that is sharp
+        at any size. Order matters only in that the SVG must not be the sole
+        entry — a browser picks the best type it knows, a crawler does not. */}
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
     {canonical && <link rel="canonical" href={canonical} />}
 

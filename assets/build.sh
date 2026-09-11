@@ -5,9 +5,10 @@
 #   ./assets/build.sh hero     re-record the Ghostty hero (needs you at the keyboard)
 #   ./assets/build.sh og       rebuild the social card
 #   ./assets/build.sh social   rebuild the GitHub repo social preview
+#   ./assets/build.sh favicon  rerasterise the favicons from assets/icon.svg
 #   ./assets/build.sh sync     copy everything to where it is served
 #   ./assets/build.sh check    verify the lot without changing anything
-#   ./assets/build.sh all      tapes + og + social + sync (not hero: it needs a human)
+#   ./assets/build.sh all      tapes + og + social + favicon + sync (not hero: it needs a human)
 #
 # ADDING A DEMO: add its name to TAPES below and drop a matching
 # assets/<name>.tape beside it. Every command here — encoding, syncing, the
@@ -78,6 +79,21 @@ cmd_social() {
   echo "  upload it by hand: repo Settings -> Social preview (GitHub has no API for it)"
 }
 
+# Rasterised from assets/icon.svg by web/scripts/favicon.mjs, because Google
+# Search cannot read the SVG the browsers are served.
+FAVICONS=(
+  "favicon.ico"
+  "favicon-96.png"
+  "apple-touch-icon.png"
+)
+
+# The rasters Google Search needs. It does not support SVG (BMP, GIF, ICO, PNG,
+# JPEG, PPM, TIFF is the whole list), so the site's SVG-only favicon left search
+# results with the default globe. See the header of web/scripts/favicon.mjs.
+cmd_favicon() {
+  node web/scripts/favicon.mjs
+}
+
 cmd_sync() {
   [[ -f assets/og.png ]] && cp assets/og.png "$WEB_PUBLIC/" && echo "  og.png -> $WEB_PUBLIC/"
   # The favicon is the mascot, so it is a copy of assets/icon.svg rather than
@@ -86,6 +102,11 @@ cmd_sync() {
   # copy that ends up a version behind.
   [[ -f assets/icon.svg ]] && cp assets/icon.svg "$WEB_PUBLIC/favicon.svg" \
     && echo "  icon.svg -> $WEB_PUBLIC/favicon.svg"
+  # ...and the rasters drawn from it, for the crawlers and for iOS.
+  for f in "${FAVICONS[@]}"; do
+    [[ -f assets/$f ]] && cp "assets/$f" "$WEB_PUBLIC/$f"
+  done
+  echo "  ${FAVICONS[*]} -> $WEB_PUBLIC/"
   if [[ -d $BLOG ]]; then
     cp assets/*.gif assets/*.mp4 "$BLOG/" 2>/dev/null || true
     echo "  gifs + mp4s -> $BLOG/"
@@ -145,6 +166,16 @@ cmd_check() {
     echo "  UNSYNCED $WEB_PUBLIC/og.png"; bad=1; }
   [[ -f $WEB_PUBLIC/favicon.svg ]] && cmp -s assets/icon.svg "$WEB_PUBLIC/favicon.svg" || {
     echo "  UNSYNCED $WEB_PUBLIC/favicon.svg (run: build.sh sync)"; bad=1; }
+  # Same two rules og.png gets: present and synced, and not older than the
+  # drawing they were rasterised from.
+  for f in "${FAVICONS[@]}"; do
+    [[ -f assets/$f ]] || { echo "  MISSING assets/$f (run: build.sh favicon)"; bad=1; continue; }
+    cmp -s "assets/$f" "$WEB_PUBLIC/$f" || {
+      echo "  UNSYNCED $WEB_PUBLIC/$f (run: build.sh sync)"; bad=1; }
+    if [[ assets/icon.svg -nt assets/$f ]]; then
+      echo "  STALE   assets/$f is older than assets/icon.svg (run: build.sh favicon)"; bad=1
+    fi
+  done
   [[ -f assets/social-preview.png ]] || { echo "  MISSING assets/social-preview.png (run: build.sh social)"; bad=1; }
   # The card is drawn FROM the mascot, so a mascot edited afterwards means the
   # card on GitHub is of an older drawing. Same staleness rule as the MP4s.
@@ -160,8 +191,9 @@ case "${1:-}" in
   hero)  cmd_hero ;;
   og)     cmd_og ;;
   social) cmd_social ;;
+  favicon) cmd_favicon ;;
   sync)  cmd_sync ;;
   check) cmd_check ;;
-  all)   cmd_tapes; cmd_og; cmd_social; cmd_sync ;;
-  *)     sed -n '2,10p' "$0" | sed 's/^# \{0,1\}//'; exit 1 ;;
+  all)   cmd_tapes; cmd_og; cmd_social; cmd_favicon; cmd_sync ;;
+  *)     sed -n '2,11p' "$0" | sed 's/^# \{0,1\}//'; exit 1 ;;
 esac
