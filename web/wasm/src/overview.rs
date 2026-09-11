@@ -434,7 +434,7 @@ fn create_flow() -> Flow<OverviewNode, OverviewEdge> {
 pub fn entry_overview() -> DemoEntry {
     DemoEntry {
         demo: Box::new(OverviewDemo::new()),
-        meta: rataflow_examples::meta::overview(),
+        meta: rataflow_examples::meta::overview_web(),
     }
 }
 

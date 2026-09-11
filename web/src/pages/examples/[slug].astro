@@ -1,0 +1,48 @@
+---
+// One real URL per example.
+//
+// These were `#slug` fragments, which are not URLs to a crawler: every example
+// resolved to `/` and the site had exactly one indexable page carrying about
+// forty words. Each now has its own route, its own title and description, and
+// its own entry in the sitemap. `/` keeps the overview and redirects any old
+// `#slug` link here.
+//
+// The body is still the app — same header, same sidebar, same viewer, and the
+// wasm reads the slug off the path (`current_slug` in web/wasm/src/main.rs).
+// What is new below it is the drawer, which is the only part of this that puts
+// prose on the page, and only prose that was not already on the screen.
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+import Sidebar from "../../components/Sidebar.astro";
+import ExampleViewer from "../../components/ExampleViewer.astro";
+import ExamplePanel from "../../components/ExamplePanel.astro";
+import { routed, summary, type Example } from "../../lib/examples";
+import "../../styles/global.css";
+
+export function getStaticPaths() {
+  return routed().map((example) => ({
+    params: { slug: example.slug },
+    props: { example },
+  }));
+}
+
+const { example } = Astro.props as { example: Example };
+
+// The sidebar description, verbatim, as the page's meta description. It is the
+// one string that describes this example in one line and it is already written;
+// putting it here costs nothing and duplicates nothing, because a meta tag does
+// not render. Everything the visitor sees comes from the wasm or the drawer.
+const description = summary(example);
+---
+
+<Layout title={`${example.title} — rataflow`} description={description} panelOpen>
+  <Header slot="header" />
+  <Sidebar slot="sidebar" activeSlug={example.slug} />
+  <ExampleViewer />
+  <ExamplePanel slot="panel" example={example} />
+</Layout>
+
+<script is:inline type="module">
+  import init from '/wasm/rataflow-web.js';
+  await init({ module_or_path: '/wasm/rataflow-web_bg.wasm' });
+</script>

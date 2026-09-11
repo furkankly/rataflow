@@ -1,0 +1,298 @@
+---
+// The drawer under the viewer: what this example demonstrates, and its code.
+//
+// WHAT GOES IN HERE, and why it is not the sidebar description. The app already
+// paints that description inside the terminal (see `shell.rs`), so repeating it
+// in HTML would show the same two sentences twice on one screen. These two are
+// on screen nowhere: the module doc at the top of examples/<x>.rs, thirteen to
+// twenty-eight lines of it, and the source. Until these routes existed both
+// were reachable only by opening the file on GitHub.
+//
+// Everything is in the DOM whether the drawer is open or shut — the toggle is
+// CSS. Content behind a disclosure is indexed normally; content injected on
+// click is not there to be indexed at all, and a crawler is not going to click.
+import { Code } from "astro:components";
+import { docHtml, type Example } from "../lib/examples";
+
+interface Props {
+  example: Example;
+}
+const { example } = Astro.props;
+
+const REPO_BLOB = "https://github.com/furkankly/rataflow/blob/main";
+---
+
+<section id="example-panel" class="shrink-0 border-t border-border bg-bg-secondary flex flex-col">
+  {/* The tab strip is the whole thing when shut, so it carries the affordance:
+      the chevron says there is more under it, and the strip itself is the hit
+      target — a 36px bar is a far easier thing to hit than a 13px glyph.
+
+      It is not a button. The chevron already is one, with the `aria-expanded`
+      and the keyboard handling that go with it; making the strip a second
+      control would put two toggles for one thing in the tab order. This is a
+      pointer convenience layered on top, which is why the handler ignores any
+      click that started on the tabs or the source link. */}
+  <div id="panel-bar" class="flex items-center gap-1 px-3 h-9 shrink-0 cursor-pointer select-none">
+    <button
+      type="button"
+      class="panel-tab px-2.5 py-1 text-xs rounded-md transition-colors cursor-pointer"
+      data-tab="about"
+      aria-controls="panel-about"
+    >About</button>
+    <button
+      type="button"
+      class="panel-tab px-2.5 py-1 text-xs rounded-md transition-colors cursor-pointer"
+      data-tab="source"
+      aria-controls="panel-source"
+    >Source</button>
+
+    <span class="flex-1"></span>
+
+    <a
+      href={`${REPO_BLOB}/${example.source}`}
+      target="_blank"
+      rel="noopener"
+      class="px-2.5 py-1 text-xs text-text-secondary hover:text-text-primary rounded-md hover:bg-bg-hover transition-colors"
+      >{example.source} ↗</a
+    >
+    <button
+      type="button"
+      id="panel-toggle"
+      class="px-2 py-1 text-text-secondary hover:text-text-primary rounded-md hover:bg-bg-hover transition-colors cursor-pointer"
+      aria-controls="panel-body"
+      title="Toggle details"
+    >
+      <svg id="panel-chevron" viewBox="0 0 16 16" width="13" height="13" aria-hidden="true" class="transition-transform">
+        <path d="M3 6 L8 11 L13 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+      <span class="sr-only">Toggle details</span>
+    </button>
+  </div>
+
+  <div id="panel-body" class="min-h-0 overflow-y-auto border-t border-border">
+    <div id="panel-about" class="px-4 py-3.5">
+      <div class="example-doc" set:html={docHtml(example.doc)} />
+      {
+        example.webNote && (
+          /* The two examples the browser runs a PORT of rather than the example
+             itself. The doc above describes the native program — which is the
+             one worth reading, since rataflow builds terminal UIs and that is
+             the code you would copy — so this says what the thing in front of
+             you does differently. The words are the port's own module doc; the
+             file that diverges is the one that knows how. */
+          <aside class="example-doc example-note mt-4 pt-3.5">
+            <p class="note-label">In the browser</p>
+            <Fragment set:html={docHtml(example.webNote)} />
+          </aside>
+        )
+      }
+    </div>
+    <div id="panel-source" class="px-1 py-1" hidden>
+      <Code code={example.code} lang="rust" theme="github-dark-default" />
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Shut: only the 36px tab strip. Open: a fixed slice of the column, so the
+     viewer above it keeps a predictable size instead of jumping with the length
+     of whichever doc is loaded.
+
+     Keyed off <html data-panel>, not off this element, because that attribute
+     is settled by a blocking script in <head> before anything paints — see
+     Layout.astro. Reading the state from the drawer's own markup meant the
+     first frame could show the wrong one. */
+  :global(html[data-panel="closed"]) #panel-body {
+    display: none;
+  }
+  :global(html[data-panel="open"]) #panel-body {
+    height: 42vh;
+  }
+  :global(html[data-panel="open"]) #panel-chevron {
+    transform: rotate(180deg);
+  }
+  /* The strip is the toggle, but its controls are still their own things. */
+  #panel-bar button,
+  #panel-bar a {
+    cursor: pointer;
+  }
+
+  /* The doc's own typography. Deliberately narrow: these are explanations, and
+     a 100ch line of prose across a wide monitor is unreadable. */
+  .example-doc {
+    max-width: 78ch;
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--color-text-secondary);
+  }
+  .example-doc :global(p) {
+    margin: 0 0 0.75rem;
+  }
+  .example-doc :global(p:last-child),
+  .example-doc :global(ul:last-child),
+  .example-doc :global(ol:last-child) {
+    margin-bottom: 0;
+  }
+  .example-doc :global(ul),
+  .example-doc :global(ol) {
+    margin: 0 0 0.75rem;
+    padding-left: 1.25rem;
+  }
+  .example-doc :global(ul) {
+    list-style: disc;
+  }
+  .example-doc :global(ol) {
+    list-style: decimal;
+  }
+  .example-doc :global(li) {
+    margin-bottom: 0.2rem;
+  }
+  .example-doc :global(h2),
+  .example-doc :global(h3),
+  .example-doc :global(h4) {
+    margin: 1.15rem 0 0.45rem;
+    font-size: 0.95em;
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+  .example-doc :global(:first-child) {
+    margin-top: 0;
+  }
+  .example-doc :global(code) {
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.92em;
+    color: var(--color-accent-blue);
+  }
+
+  .example-note {
+    border-top: 1px dashed var(--color-border);
+  }
+  .note-label {
+    margin: 0 0 0.4rem;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-accent-blue);
+  }
+
+  #panel-source :global(pre) {
+    margin: 0;
+    padding: 0.75rem 1rem;
+    background: transparent !important;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+</style>
+
+<script>
+  const KEY = "rataflow:panel-open";
+  const TAB_KEY = "rataflow:panel-tab";
+
+  // Tailwind classes, applied from here rather than in the markup, so the two
+  // states are described in one place.
+  const ON = ["bg-bg-hover", "text-text-primary"];
+  const OFF = ["text-text-secondary", "hover:text-text-primary", "hover:bg-bg-hover"];
+
+  // Private windows and blocked site data both throw on access, and the drawer
+  // works fine without the memory — it just forgets between pages.
+  const remembered = (key: string): string | null => {
+    try {
+      return localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  };
+  const remember = (key: string, value: string) => {
+    try {
+      localStorage.setItem(key, value);
+    } catch {
+      /* see above */
+    }
+  };
+
+  /**
+   * Bind the drawer that is in the document right now.
+   *
+   * Called again after a client-side navigation, which replaces the whole
+   * section with the next example's markup — new elements, no listeners. Doing
+   * it by re-querying rather than by delegating keeps this readable, and there
+   * is only ever one drawer.
+   */
+  const isOpen = () => document.documentElement.dataset.panel === "open";
+
+  function mount() {
+    const panel = document.getElementById("example-panel");
+    const toggle = document.getElementById("panel-toggle");
+    if (!panel || !toggle) return;
+    const tabs = [...panel.querySelectorAll<HTMLElement>(".panel-tab")];
+
+    function setOpen(open: boolean, persist = true) {
+      document.documentElement.dataset.panel = open ? "open" : "closed";
+      toggle!.setAttribute("aria-expanded", String(open));
+      // Nothing to tell the canvas: the ResizeObserver in ExampleViewer sees
+      // the container's box change and hands the measurement back to it.
+      if (persist) remember(KEY, String(open));
+    }
+
+    function setTab(name: string, persist = true) {
+      for (const tab of tabs) {
+        const active = tab.dataset.tab === name;
+        tab.classList.remove(...ON, ...OFF);
+        tab.classList.add(...(active ? ON : OFF));
+        const body = document.getElementById(`panel-${tab.dataset.tab}`);
+        if (body) body.hidden = !active;
+      }
+      if (persist) remember(TAB_KEY, name);
+    }
+
+    // The state is already correct on <html>; only the parts of it that cannot
+    // be expressed in CSS need setting.
+    toggle.setAttribute("aria-expanded", String(isOpen()));
+    setTab(remembered(TAB_KEY) === "source" ? "source" : "about", false);
+
+    toggle.addEventListener("click", () => setOpen(!isOpen()));
+
+    // The whole strip toggles, except where something else already handles the
+    // click: the two tabs, the source link, and the chevron itself — which has
+    // its own listener above and would otherwise fire twice and cancel out.
+    document.getElementById("panel-bar")?.addEventListener("click", (event) => {
+      if ((event.target as Element).closest("button, a")) return;
+      setOpen(!isOpen());
+    });
+    for (const tab of tabs) {
+      tab.addEventListener("click", () => {
+        setTab(tab.dataset.tab!);
+        if (!isOpen()) setOpen(true);
+      });
+    }
+  }
+
+  // `astro:page-load` fires for the first load and after every client-side
+  // navigation, which is exactly when there is a drawer needing its listeners —
+  // the ClientRouter replaces the body, so the previous one's are gone with it.
+  document.addEventListener("astro:page-load", mount);
+
+  // The ClientRouter swaps <html>'s attributes for the incoming page's, which
+  // would hand back that page's server-rendered default and undo the stored
+  // preference. `astro:after-swap` runs before the new state paints, so putting
+  // it back here keeps the correction invisible on navigation too.
+  document.addEventListener("astro:after-swap", () => {
+    const stored = remembered(KEY);
+    if (stored !== null) {
+      document.documentElement.dataset.panel = stored === "true" ? "open" : "closed";
+    }
+  });
+</script>

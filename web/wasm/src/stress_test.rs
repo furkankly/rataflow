@@ -19,31 +19,11 @@ use rataflow::{
     Background, BackgroundVariant, Controls, Edge, EventResponse, Flow, Node, StepEdge, TextContent,
 };
 
-use rataflow_examples::ExampleMeta;
 
 pub fn entry_stress_test() -> DemoEntry {
     DemoEntry {
         demo: Box::new(StressTestDemo::new()),
-        meta: ExampleMeta {
-            title: "Stress Test",
-            description: Some(
-                "Default: 25x25 grid (625 nodes, 624 edges).\nResize via URL, e.g. ?size=50#stress-test or ?cols=30&rows=20#stress-test",
-            ),
-            keys: vec![
-                ("t", "drag test"),
-                ("s", "select test"),
-                ("r", "remount test"),
-                ("a", "run all"),
-                ("l", "log frames"),
-                ("↑↓", "select next/prev"),
-                ("hjkl", "pan"),
-                ("+/-", "zoom"),
-                ("f", "fit view"),
-                ("c", "center"),
-                ("i", "lock"),
-                ("Del", "delete"),
-            ],
-        },
+        meta: rataflow_examples::meta::stress_test_web(),
     }
 }
 

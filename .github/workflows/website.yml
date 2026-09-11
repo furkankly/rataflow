@@ -9,6 +9,12 @@ on:
     paths:
       - "web/**"
       - "src/**"
+      # The example pages render each example's module doc and its source,
+      # read straight off disk at build time (web/src/lib/examples.ts). A
+      # change in here is a change to what the site serves, so it has to
+      # rebuild — otherwise the page keeps showing the old code until some
+      # unrelated commit happens to trigger a deploy.
+      - "examples/**"
       - "assets/**"
       - "Cargo.toml"
       - "Cargo.lock"
@@ -17,6 +23,12 @@ on:
     paths:
       - "web/**"
       - "src/**"
+      # The example pages render each example's module doc and its source,
+      # read straight off disk at build time (web/src/lib/examples.ts). A
+      # change in here is a change to what the site serves, so it has to
+      # rebuild — otherwise the page keeps showing the old code until some
+      # unrelated commit happens to trigger a deploy.
+      - "examples/**"
       - "assets/**"
       - "Cargo.toml"
       - "Cargo.lock"

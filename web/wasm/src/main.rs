@@ -56,12 +56,20 @@ fn create_demo(hash: &str) -> DemoEntry {
     }
 }
 
-fn get_current_hash() -> String {
+/// Which example to show, read from the path.
+///
+/// `/` is the overview and `/examples/<slug>/` is everything else. The `#<slug>`
+/// fragment the site used before these routes existed is not handled here: the
+/// page redirects an old fragment to its route before this module is
+/// instantiated, so by the time anything asks, the path is already the answer.
+fn current_slug() -> String {
     web_sys::window()
-        .and_then(|w| w.location().hash().ok())
+        .and_then(|w| w.location().pathname().ok())
+        .and_then(|path| {
+            let slug = path.strip_prefix("/examples/")?.trim_end_matches('/');
+            (!slug.is_empty()).then(|| slug.to_string())
+        })
         .unwrap_or_default()
-        .trim_start_matches('#')
-        .to_string()
 }
 
 // ============================================================================
@@ -135,7 +143,7 @@ fn convert_mouse(event: &RatzillaMouseEvent) -> rataflow::MouseEvent {
 // ============================================================================
 
 fn main() -> io::Result<()> {
-    let hash = get_current_hash();
+    let hash = current_slug();
     let entry: Rc<RefCell<DemoEntry>> = Rc::new(RefCell::new(create_demo(&hash)));
     let frame_count: Rc<Cell<u32>> = Rc::new(Cell::new(0));
 
@@ -251,18 +259,26 @@ fn main() -> io::Result<()> {
         }
     }
 
-    // Hash change handler — swap demo on navigation
+    // Swap the demo when the URL changes, without reloading the page.
+    //
+    // One event, from one place: Astro's ClientRouter owns navigation — sidebar
+    // clicks, the back button, the forward button — and the page fires this
+    // once the swap is done (see ExampleNavigation.astro). The canvas is marked
+    // `transition:persist`, so this module and its WebGL context survive the
+    // swap and only the graph inside them changes.
     if let Some(window) = web_sys::window() {
         let entry = entry.clone();
         let frame_count = frame_count.clone();
         let closure = Closure::<dyn Fn()>::new(move || {
-            let hash = get_current_hash();
-            *entry.borrow_mut() = create_demo(&hash);
+            let slug = current_slug();
+            *entry.borrow_mut() = create_demo(&slug);
+            // Back to frame zero so the new graph gets its fit_view, the same as
+            // it would on a cold load.
             frame_count.set(0);
         });
 
-        let _ =
-            window.add_event_listener_with_callback("hashchange", closure.as_ref().unchecked_ref());
+        let _ = window
+            .add_event_listener_with_callback("rataflow:navigate", closure.as_ref().unchecked_ref());
         closure.forget();
     }
 

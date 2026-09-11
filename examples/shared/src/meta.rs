@@ -294,3 +294,139 @@ pub fn save_restore(saved: bool) -> ExampleMeta<'static> {
         vec![("s", "save"), ("r", "restore")],
     )
 }
+
+/// The BROWSER stress test's metadata.
+///
+/// `examples/stress_test.rs` is a different program with its own inline meta:
+/// the native one is driven by CLI flags, this one by URL params, and their key
+/// lists differ. So this is not a shared definition, it is the web port's own —
+/// named like [`overview_web`] for that reason. It lives here rather than
+/// inline in the wasm crate because this module is where example prose lives,
+/// and prose inline in a source file is what drifted last time.
+pub fn stress_test_web() -> ExampleMeta<'static> {
+    meta(
+        "Stress Test",
+        Some(
+            "Default: 25x25 grid (625 nodes, 624 edges).\nResize via URL, e.g. ?size=50#stress-test or ?cols=30&rows=20#stress-test",
+        ),
+        vec![
+            ("t", "drag test"),
+            ("s", "select test"),
+            ("r", "remount test"),
+            ("a", "run all"),
+            ("l", "log frames"),
+        ],
+    )
+}
+
+/// The BROWSER overview's metadata.
+///
+/// `web/wasm/src/overview.rs` is a port, not a build of `examples/overview.rs`:
+/// the terminal-only nodes (ratatui-image, tachyonfx) are a bar chart there,
+/// because a browser has no image protocol to draw them with.
+///
+/// That makes [`overview`]'s description actively wrong on the web — it asks
+/// for Kitty/iTerm2/Sixel, none of which mean anything in a tab — and its two
+/// extra keys dead: the port forwards to the default bindings only, so `p`
+/// (image mode) and `Enter` (toggle input) would be advertised and do nothing.
+/// Hence a second definition rather than a shared one. The two programs differ,
+/// so their descriptions are allowed to.
+pub fn overview_web() -> ExampleMeta<'static> {
+    meta(
+        "Overview",
+        Some(
+            "Custom nodes, edges, and handles. Nodes via ratatui widgets, a raw buffer, and a sparkline.\nThe native example's terminal-only nodes (ratatui-image, tachyonfx) are a bar chart here.",
+        ),
+        vec![],
+    )
+}
+
+// ============================================================================
+// The website's list
+// ============================================================================
+
+/// One example as the website publishes it.
+///
+/// The web build turns each of these into a real route (`/examples/<slug>/`)
+/// instead of the hash fragment it used to be, so `source` is here to let the
+/// page render the example's module doc and its code — the two things a reader
+/// (and a crawler) cannot get out of a WebGl2 canvas.
+pub struct WebExample {
+    /// Last segment of the URL, and the hash the app has always accepted.
+    pub slug: &'static str,
+    /// Path to the example, relative to the repository root.
+    ///
+    /// The NATIVE one, always, even for the two that the browser runs a port
+    /// of. rataflow builds terminal UIs; a reader of the site is deciding
+    /// whether to use it in one, and the code they would copy is this. The
+    /// browser build is how they watch it move without `cargo run` first.
+    pub source: &'static str,
+    /// The port the browser actually runs, where it is a different program.
+    ///
+    /// `None` for the twenty-one examples the wasm build compiles as they are.
+    /// For the two it does not, the page shows a short note saying what changed,
+    /// taken from this file's own module doc — which already explains it,
+    /// because the file doing the diverging is the one that knows.
+    pub web_source: Option<&'static str>,
+    pub meta: ExampleMeta<'static>,
+}
+
+/// Every example the website ships, in sidebar order.
+///
+/// Not every example in `examples/` is here: `basic_async` and `termion_basic`
+/// are native-only (a tokio runtime and a termion backend, neither of which the
+/// browser build has), so they keep their metadata above without a route.
+///
+/// `web/wasm/src/main.rs` maps these same slugs to the demo each one builds.
+/// That mapping is behaviour and has to live with the constructors; this one is
+/// text. `build.sh check` compares the two so a slug added to one and not the
+/// other is caught rather than silently serving the overview.
+pub fn web_examples() -> Vec<WebExample> {
+    fn e(slug: &'static str, source: &'static str, meta: ExampleMeta<'static>) -> WebExample {
+        WebExample { slug, source, web_source: None, meta }
+    }
+    /// An example the browser runs a port of, not the example itself.
+    fn ported(
+        slug: &'static str,
+        source: &'static str,
+        web_source: &'static str,
+        meta: ExampleMeta<'static>,
+    ) -> WebExample {
+        WebExample { slug, source, web_source: Some(web_source), meta }
+    }
+    vec![
+        ported(
+            "overview",
+            "examples/overview.rs",
+            "web/wasm/src/overview.rs",
+            overview_web(),
+        ),
+        e("basic", "examples/basic.rs", basic()),
+        e("view-only", "examples/view_only.rs", view_only()),
+        e("custom-nodes", "examples/custom_nodes.rs", custom_nodes()),
+        e("node-flags", "examples/node_flags.rs", node_flags()),
+        e("hierarchy", "examples/hierarchy.rs", hierarchy()),
+        e("custom-edges", "examples/custom_edges.rs", custom_edges()),
+        e("edge-routing", "examples/edge_routing.rs", edge_routing()),
+        e("floating-edges", "examples/floating_edges.rs", floating_edges()),
+        e("animating-edges", "examples/animating_edges.rs", animating_edges()),
+        e("reconnection", "examples/reconnection.rs", reconnection()),
+        e("multi-select", "examples/multi_select.rs", multi_select()),
+        e("context-menu", "examples/context_menu.rs", context_menu()),
+        e("custom-bindings", "examples/custom_bindings.rs", custom_bindings()),
+        e("events", "examples/events.rs", events()),
+        e("validation", "examples/validation.rs", validation()),
+        e("companion-widgets", "examples/companion_widgets.rs", companion_widgets()),
+        e("custom-layout", "examples/custom_layout.rs", custom_layout()),
+        e("undo-redo", "examples/undo_redo.rs", undo_redo()),
+        e("mutations", "examples/mutations.rs", mutations()),
+        e("theming", "examples/theming.rs", theming()),
+        e("save-restore", "examples/save_restore.rs", save_restore(false)),
+        ported(
+            "stress-test",
+            "examples/stress_test.rs",
+            "web/wasm/src/stress_test.rs",
+            stress_test_web(),
+        ),
+    ]
+}

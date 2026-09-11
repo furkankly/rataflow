@@ -3,8 +3,6 @@
 //! Demonstrates the minimal setup for a read-only flow graph:
 //! `from_edges()` for quick graph construction, `request_fit_view()` to
 //! show all nodes, and `ratatui::run()` for terminal lifecycle.
-//!
-//! Press 'q' to quit.
 
 use crossterm::event::{self, Event as CrosstermEvent, KeyCode};
 use rataflow::Background;
