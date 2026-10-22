@@ -1986,7 +1986,7 @@ dependencies = [
 
 [[package]]
 name = "rataflow"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "crossterm 0.29.0",
  "futures",
